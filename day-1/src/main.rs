@@ -6,9 +6,11 @@ fn main() {
     let input = include_str!("../input.txt");
     let content_newlines = input.split('\n').filter(|s| !s.is_empty());
 
+    let re = Regex::new(r"\d").unwrap();
+
     let digit_tuples = content_newlines
         .clone()
-        .filter_map(problem_one)
+        .filter_map(|line| problem_one(line, &re))
         .filter_map(parse_str_tuple)
         .filter_map(|(first, last)| format!("{first}{last}").parse::<i32>().ok());
 
@@ -47,8 +49,7 @@ fn parse_digit_word(word_or_digit: &str) -> Result<i32, ParseIntError> {
     }
 }
 
-fn problem_one(input: &str) -> Option<(&str, &str)> {
-    let re = Regex::new(r"\d").unwrap();
+fn problem_one<'a>(input: &'a str, re: &Regex) -> Option<(&'a str, &'a str)> {
     let matches: Vec<regex::Match<'_>> = re.find_iter(input).collect();
 
     match (matches.first(), matches.last()) {
