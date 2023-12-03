@@ -3,20 +3,17 @@ use std::num::ParseIntError;
 use regex::Regex;
 
 fn main() {
-    let input = include_str!("../input.txt");
+    
     let content_newlines = input.split('\n').filter(|s| !s.is_empty());
 
-    let re = Regex::new(r"\d").unwrap();
+    let digit_re = Regex::new(r"\d").unwrap();
+    // let word_re = Regex::new(r"\d|oneight|twone|threeight|fiveight|sevenine|eightwo|eighthree|nineight|one|two|three|four|five|six|sever|eight|nine").unwrap();
 
     let digit_tuples = content_newlines
         .clone()
-        .filter_map(|line| problem_one(line, &re))
+        .filter_map(|line| problem_one(line, &digit_re))
         .filter_map(parse_str_tuple)
         .filter_map(|(first, last)| format!("{first}{last}").parse::<i32>().ok());
-
-    // digit_tuples
-    //     .enumerate()
-    //     .for_each(|(i, n)| println!("{i}: {:?}", n));
 
     println!(
         "The sum of all the valid lines' numbers is: {}",
