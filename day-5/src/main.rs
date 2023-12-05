@@ -8,23 +8,32 @@ struct MapLine {
 fn main() {
     let input = include_str!("../input.txt");
     let mut sections = input.split_terminator("\n\n");
-    let seeds = sections
+    let seeds_flat = sections
         .next()
         .unwrap()
         .split_whitespace()
-        .filter_map(|n| n.parse::<i64>().ok());
+        .filter_map(|n| n.parse::<i64>().ok())
+        .collect::<Vec<i64>>();
 
-    let section_maps = sections.map(parse_section).map(build_section_fn);
+    let parsed_sections = sections.map(parse_section);
+    let section_maps: Vec<_> = parsed_sections.map(build_section_fn).collect();
 
-    let destinations = seeds.map(|s| {
-        section_maps.clone().fold(s, |input, func| func(input))
-    });
+    let destinations = seeds_flat
+        .chunks(2)
+        .flat_map(|chunk| {
+            let seed_start = chunk[0];
+            let seed_offset = chunk[1];
+            let seed_range = seed_start..(seed_start + seed_offset);
 
-    println!("The nearest destination is {}", destinations.min().unwrap());
+            seed_range.map(|s| section_maps.iter().fold(s, |input, func| func(input)))
+        })
+        .min();
+
+    println!("The nearest destination is {:?}", destinations.unwrap());
 }
 
-fn build_section_fn(sections: Vec<MapLine>) -> impl Fn(i64) -> i64 {
-    move |input| {
+fn build_section_fn(sections: Vec<MapLine>) -> Box<impl Fn(i64) -> i64 + 'static> {
+    Box::new(move |input| {
         for section in &sections {
             if input >= section.src_start && input < section.src_start + section.length {
                 return section.dest_start + input - section.src_start;
@@ -32,7 +41,7 @@ fn build_section_fn(sections: Vec<MapLine>) -> impl Fn(i64) -> i64 {
         }
 
         return input;
-    }
+    })
 }
 
 fn parse_section(section: &str) -> Vec<MapLine> {
