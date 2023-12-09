@@ -58,3 +58,18 @@ fn problem_one<'a>(input: &'a str, re: &Regex) -> Option<(&'a str, &'a str)> {
         (_, _) => None,
     }
 }
+
+
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn overlapping_words() {
+        let test = "xtwone3four";
+
+        assert!
+    }
+}

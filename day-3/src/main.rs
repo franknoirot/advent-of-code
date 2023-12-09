@@ -42,7 +42,7 @@ fn is_symbol(c: char) -> bool {
 
 fn rotated_or_str(input: &String, offset: usize) -> String {
     // split characters into vector
-    let input_vec = input.chars().collect::<Vec<char>>();
+    let input_vec: Vec<char> = input.chars().collect();
     let mut left = input_vec.clone();
     let mut right = input_vec.clone();
 
